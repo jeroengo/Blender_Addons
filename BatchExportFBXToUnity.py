@@ -3,30 +3,28 @@ import os
 
 bl_info = {
     "name": "Batch Export for Unity",
-    "description": "This add-on allows you to export all selected objects with custom settings for unity",
-    "author": "Jeroen",
+    "description": "This add-on allows you to export all selected objects with custom settings for Unity",
+    "author": "Jeroen Gorissen",
     "version": (1, 0),
-    "blender": (4, 0, 0),
+    "blender": (2, 80, 0),
     "location": "View3D > Tools",
     "category": "Object"
 }
 
-import bpy
-
 # Define custom operator
-class BatchExportToUnity(bpy.types.Operator):
-    bl_idname = "object.unitybatchexport"
+class OBJECT_OT_UnityBatchExport(bpy.types.Operator):
+    bl_idname = "object.unity_batch_export"
     bl_label = "Unity Batch Export"
 
     def execute(self, context):
         # Set the directory where you want to save the FBX files
-        output_directory = bpy.context.scene.my_directory
+        output_directory = context.scene.my_directory
 
         # Ensure the output directory exists
         os.makedirs(output_directory, exist_ok=True)
 
         # Get the selected objects
-        selected_objects = bpy.context.selected_objects
+        selected_objects = context.selected_objects
 
         # Loop through each selected object and export as FBX
         for obj in selected_objects:
@@ -47,13 +45,13 @@ class BatchExportToUnity(bpy.types.Operator):
 
         print("Batch export completed.")
 
-        print(bpy.context.scene.my_directory)
+        print(context.scene.my_directory)
         return {'FINISHED'}
 
 # Define custom panel
-class MyPanel(bpy.types.Panel):
+class OBJECT_PT_UnityBatchExportPanel(bpy.types.Panel):
     bl_label = "Unity Batch Export"
-    bl_idname = "OBJECT_PT_my_panel2"
+    bl_idname = "OBJECT_PT_unity_batch_export_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = 'My Addon'
@@ -61,17 +59,17 @@ class MyPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         layout.prop(context.scene, "my_directory")
-        layout.operator("object.unitybatchexport", text="Batch export for unity")
+        layout.operator("object.unity_batch_export", text="Batch export for Unity")
 
 # Register and unregister functions
 def register():
-    bpy.utils.register_class(BatchExportToUnity)
-    bpy.utils.register_class(MyPanel)
+    bpy.utils.register_class(OBJECT_OT_UnityBatchExport)
+    bpy.utils.register_class(OBJECT_PT_UnityBatchExportPanel)
     bpy.types.Scene.my_directory = bpy.props.StringProperty(name="My Directory", subtype='DIR_PATH')
 
 def unregister():
-    bpy.utils.unregister_class(BatchExportToUnity)
-    bpy.utils.unregister_class(MyPanel)
+    bpy.utils.unregister_class(OBJECT_OT_UnityBatchExport)
+    bpy.utils.unregister_class(OBJECT_PT_UnityBatchExportPanel)
     del bpy.types.Scene.my_directory
 
 # Allow running as a script
